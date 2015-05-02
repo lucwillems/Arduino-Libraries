@@ -1,0 +1,48 @@
+#######################################
+# Syntax Coloring Map For TimerOne
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Analog                         KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+setup                          KEYWORD2
+setPrescaler                   KEYWORD2
+setReference                   KEYWORD2
+setSamples                     KEYWORD2
+analogRead                     KEYWORD2
+Temperature                    KEYWORD2
+internalReference              KEYWORD2
+internalGND0                   KEYWORD2
+analogTime                     KEYWORD2
+scanTime                       KEYWORD2
+Count                          KEYWORD2
+startScan                      KEYWORD2
+isScanActive                   KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+PS_2                           LITERAL1
+PS_4                           LITERAL1
+PS_8                           LITERAL1
+PS_16                          LITERAL1
+PS_32                          LITERAL1
+PS_64                          LITERAL1
+PS_128                         LITERAL1
+ADC_A0                         LITERAL1
+ADC_A1                         LITERAL1
+ADC_A2                         LITERAL1
+ADC_A3                         LITERAL1
+ADC_A4                         LITERAL1
+ADC_A5                         LITERAL1
+ADC_A6                         LITERAL1
+ADC_A7                         LITERAL1
+
