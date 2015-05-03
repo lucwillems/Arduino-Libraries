@@ -93,28 +93,36 @@ void HardwareAnalog::ADCinit() {
 }
 
 int HardwareAnalog::analogRead(byte channel) {
-  if (channel < nrOfChannels) {
-     return values[channel];
+   int result=-1;
+   if (channel < nrOfChannels) {
+     noInterrupts();
+     result=values[channel];
+     interrupts();
   }
-  return -1;
+  return result;
 }
 
 unsigned long HardwareAnalog::analogTime(byte channel) {
+  long result=-1;
   if (channel < nrOfChannels) {
-     return times[channel];
+     noInterrupts();
+     result=times[channel];
+     interrupts();
   }
-  return -1;
+  return result;
 }
 
 unsigned long HardwareAnalog::scanTime() {
   unsigned long time=0;
+  noInterrupts();
   for (int i=0;i<nrOfChannels;i++) {
       time += times[i];
   }
+  interrupts();
   return time;
 }
   
-unsigned long HardwareAnalog::Count() {
+unsigned int HardwareAnalog::Count() {
   return scanCounter;
 }
 

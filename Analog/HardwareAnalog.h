@@ -64,18 +64,18 @@ class HardwareAnalog {
   byte sampleCount;  
 
   //status counters/flags  
-  unsigned long scanCounter;
+  unsigned int scanCounter;
   bool scanActive;
 
   unsigned long startADCTime;
   scanFinishCallback pcallBack;
   
-  volatile int values[MAX_CHANNELS];
-  volatile byte channels[MAX_CHANNELS];
-  volatile unsigned long times[MAX_CHANNELS];
-  volatile byte currentChannel;
-  volatile byte currentSample;
-  volatile byte nrOfChannels;
+  unsigned int values[MAX_CHANNELS];
+  byte channels[MAX_CHANNELS];
+  unsigned long times[MAX_CHANNELS];
+  byte currentChannel;
+  byte currentSample;
+  byte nrOfChannels;
 
   void ADCinit();
   inline void ADCstart();
@@ -97,13 +97,13 @@ public:
   
   unsigned long analogTime(byte channel);
   unsigned long scanTime();
-  unsigned long Count();
+  unsigned int Count();
 
   void idle();
   
   void initScan(byte n, const byte channels[]);
   bool startScan();
-  bool isScanActive();
+  inline bool isScanActive();
   
   inline HardwareAnalog();
   inline void ADC_ISR();
