@@ -34,7 +34,7 @@ const byte channels[] = {A0, A1, A2, A3, A4, A5};
 
 setup() {
   Analog.initScan(nrOfChannels,channels);
-  Analog.startScan(); //star first scan
+  Analog.startScan(); //start first scan
 }
 
 loop() {
@@ -67,7 +67,7 @@ void ADC() {
 void setup() {
   Analog.initScan(nrOfChannels,channels);
   Analog.setCallBack(&ADC);
-  Analog.startScan(); //star first scan
+  Analog.startScan(); //start first scan
 }
 
 void loop() {
