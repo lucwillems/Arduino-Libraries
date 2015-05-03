@@ -41,6 +41,8 @@ loop() {
    if (Analog.isScanFinished()) {
       //read the channels based on there index number
       int value=Analog.analogRead(0);
+      //start new scan
+      Analog.startScan();
    };
    //do other stuff...
 }
