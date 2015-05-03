@@ -47,3 +47,30 @@ loop() {
    //do other stuff...
 }
 ```
+
+Using callback function we can handle ADC conversion outside the loop() function.
+
+```C
+constant byte nrOfChannels=5;
+const byte channels[] = {A0, A1, A2, A3, A4, A5};
+
+void ADC() {
+  //this function is called as parted of ADC ISR when all channels are scanned
+  //keep it short, don't try to calculate PI here ;-)
+
+  //read the channels based on there index number
+  int value=Analog.analogRead(0);
+  //start new scan
+  Analog.startScan();
+}
+
+void setup() {
+  Analog.initScan(nrOfChannels,channels);
+  Analog.setCallBack(&ADC);
+  Analog.startScan(); //star first scan
+}
+
+void loop() {
+   //do other stuff...
+}
+```
