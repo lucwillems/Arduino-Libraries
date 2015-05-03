@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014 Luc Willems (T.M.M.)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
 #include <Arduino.h>
 #include <HardwareAnalog.h>
 
@@ -185,6 +201,10 @@ int HardwareAnalog::internalGND() {
   return scanInternal(5,0xCF);
 }
 
+void HardwareAnalog::setCallBack(scanFinishCallback callback) {
+  pcallBack=callback;
+}
+
 void HardwareAnalog::ADC_ISR() {
 #ifdef SERIAL_DEBUG
   Serial.print("ADC ISR: channel=");
@@ -208,6 +228,16 @@ void HardwareAnalog::ADC_ISR() {
            Serial.println(scanCounter);
          #endif
          scanActive=false;
+	 //callback if defined
+	 if (pcallBack) {
+	     #ifdef SERIAL_DEBUG
+               Serial.print("callBack() ..");
+             #endif
+             (*pcallBack)(); //call it 
+	     #ifdef SERIAL_DEBUG
+               Serial.print("callBack() done");
+             #endif
+	 }
          return;
       } else {
 	 //start new set of samples

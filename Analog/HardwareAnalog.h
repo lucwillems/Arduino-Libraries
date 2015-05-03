@@ -1,3 +1,19 @@
+/*
+ * Copyright 2014 Luc Willems (T.M.M.)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
 #ifndef ADC_h
 #define ADC_h
 
@@ -14,7 +30,7 @@ const byte PS_32  = (1 << ADPS2) | (1 << ADPS0);
 const byte PS_64  = (1 << ADPS2) | (1 << ADPS1);
 const byte PS_128 = (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
 
-const byte MAX_CHANNELS = 5;
+const byte MAX_CHANNELS = 6;
 const byte ADC_A0=0x00;
 const byte ADC_A1=0x01;
 const byte ADC_A2=0x02;
@@ -35,6 +51,9 @@ const byte ADC_ARDUINO_A7=22;
 
 //const byte ADC_MAX=0x1F; //max channels
 
+// CallBack function called when all channels are finished
+typedef void (*scanFinishCallback) ();
+
 class HardwareAnalog {
 
  private:
@@ -48,6 +67,7 @@ class HardwareAnalog {
   bool scanActive;
 
   unsigned long startADCTime;
+  scanFinishCallback pcallBack;
   
   volatile int values[MAX_CHANNELS];
   volatile byte channels[MAX_CHANNELS];
@@ -67,6 +87,7 @@ public:
   void setPrescaler(byte x);
   void setReference(byte reference);
   void setSamples(byte count);
+  void setCallBack(scanFinishCallback callback);
   
   int analogRead(byte channel);
   int Temperature(byte samples);
