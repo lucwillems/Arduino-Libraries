@@ -14,16 +14,17 @@ on a typical Arduino UNO with 16MHz clock , a ADC sample takes up to
           
           0,0625 uSec * 128 * 13 = 104 uSec.
 
-Arduino analogRead() works synchronized. 1 read will block atleast 104 uSec before returning.
-all this time, we could do other stuff. reading all 5 Analog channels will takeup more than 520 usec.
-we could only do this 2000/second and nothing else.
+Arduino analogRead() works synchronized. the analogRead() call will block atleast 104 uSec before returning.
+all this time, we can not do other stuff. 
+Reading all 5 Analog channels will takeup more than 520 usec. This limits the reading speed of the ADC channels to 10000/sec for 1 channel to 2000/second for all channels. Ofcourse this would
+not be praktical as we will not be able todo anything else.
 
-This library splits the triggering of a ADC cycle and reading of result values. This leafs you program to do some other stuff will waiting on completion of the ADC cycle.
-It is able to read all 5 ADC channels in sequence.
+This library splits the triggering of a ADC cycle and reading of result values. This leafs your program to do some other stuff will waiting on completion of the ADC cycle.
 
-Setup
+It is able to read all 5 ADC channels in sequence in 340 uSeconds using 128 prescaller.
+
+Usage
 =====
-Starting a scan
-===============
-Reading values
-==============
+The library exports a single ```Analog``` class which can be used to access the analog channels.
+See examples/Simple.ino for basic usage example
+
