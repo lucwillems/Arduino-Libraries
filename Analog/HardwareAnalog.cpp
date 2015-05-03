@@ -41,10 +41,10 @@ void HardwareAnalog::setSamples(byte count) {
   sampleCount=count;
 }
   
-void HardwareAnalog::setup(byte n, const byte analogChannels[]) {
+void HardwareAnalog::initScan(byte n, const byte analogChannels[]) {
   nrOfChannels=min(MAX_CHANNELS,n);
 #ifdef SERIAL_DEBUG
-  Serial.println("ADC setup ");
+  Serial.println("ADC init scan ");
   Serial.println(nrOfChannels);
 #endif
   for (int i=0; i < nrOfChannels; ++i) {

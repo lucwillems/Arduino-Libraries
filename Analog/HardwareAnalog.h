@@ -64,7 +64,6 @@ class HardwareAnalog {
   
 public:
  
-  void setup(byte n, const byte channels[]);
   void setPrescaler(byte x);
   void setReference(byte reference);
   void setSamples(byte count);
@@ -80,6 +79,7 @@ public:
 
   void idle();
   
+  void initScan(byte n, const byte channels[]);
   bool startScan();
   bool isScanActive();
   
