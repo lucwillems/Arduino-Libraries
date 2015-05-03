@@ -74,3 +74,25 @@ void loop() {
    //do other stuff...
 }
 ```
+
+Configuring the ADC process
+===========================
+
+following methods can be used to configure the ADC process.
+- setPrescaler(PS_xxxx) : set the ADC by selecting a correct prescaling factor. values tha can be used are PS_128,PS_64,PS_32,PS_16,PS_8,PS_4,PS_2
+- setReference(int reference) : set the ADC reference. see analogReference in arduino documentation
+- setSamples(byte n) : set the number of successive samples we take. the last sample is stored and can be retrieved via analogRead() function.
+ 
+Prescaling and resolution
+=========================
+Arduino software uses by default a prescaling of 128. with clock speed of 16MHZ, we will have a ADC clock of 16Mhz/128 = 125Khz.
+
+The effective resolution of the ADC process is depending on speed of the ADC clock.
+
+ADC clock speeds below 200 Khz, will give 10bit resolution. Higher speeds (prescaller = 64 or lower) reduces the resolution and effective bits.
+Note that we will always read 10bits. it up to you to right shift the data during processing if needed.
+
+more info see :
+
+http://www.microsmart.co.za/technical/2014/03/01/advanced-arduino-adc/
+
