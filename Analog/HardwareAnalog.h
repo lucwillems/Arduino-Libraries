@@ -20,7 +20,18 @@
 
 #include "Arduino.h"
 
+//#define ADC_TIMING
 //#define SERIAL_DEBUG 
+#define SERIAL_IDLE_DEBUG
+
+// Define cbi() and sbi() for clearing and setting bits in the
+// ADC registers.
+#ifndef cbi
+#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
+#endif
+#ifndef sbi
+#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
+#endif
 
 // Define various ADC prescaler
 const byte PS_2  =  (1 << ADPS0);
@@ -63,16 +74,21 @@ class HardwareAnalog {
   byte prescaler;
   byte sampleCount;  
 
-  //status counters/flags  
-  unsigned int scanCounter;
+  //status flag  
   bool scanActive;
-
-  unsigned long startADCTime;
+  bool lock;
+  bool scanRequested;
+  
   scanFinishCallback pcallBack;
   
   unsigned int values[MAX_CHANNELS];
   byte channels[MAX_CHANNELS];
+
+#ifdef ADC_TIMING
+  unsigned long startADCTime;
   unsigned long times[MAX_CHANNELS];
+#endif
+
   byte currentChannel;
   byte currentSample;
   byte nrOfChannels;
@@ -95,9 +111,11 @@ public:
   int internalReference();
   int internalGND();
   
+#ifdef ADC_TIMING
   unsigned long analogTime(byte channel);
   unsigned long scanTime();
-  unsigned int Count();
+  unsigned long interruptCount;
+#endif
 
   void idle();
   

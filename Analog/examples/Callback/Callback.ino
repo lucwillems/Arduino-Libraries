@@ -5,23 +5,21 @@
 byte channels[] = {A0, A1, A2, A3, A4, A5};
 byte ledPin = 13;
 
+//This method is called as part of the ADC complete ISR
+//we should keep it short as possible.
 void ADCFinished() {
      //Print result of scanning
      for (int i=0;i<6;i++) {
        Serial.print("Channel ");
        Serial.print(i);
        Serial.print(" : ");
-       //Analog.analogRead() will return the last succesfull scanned value
        Serial.print(Analog.analogRead(i)); //we use index of our channels, NOT A0,A1,A2 !!
        Serial.print(" time: ");
-       //Analog.analogTime() will return the time between start ADC and the interrupt send when ADC is finished
        Serial.println(Analog.analogTime(i)); //we use index of our channels, NOT A0,A1,A2 !!
      }       
      //scanTime() returns total time of scanning all channels configured in initScan()
      Serial.print("scan Time :");
-     Serial.print(Analog.scanTime());
-     Serial.println("");
-     Serial.println("");
+     Serial.println(Analog.scanTime());
 }
 
 void setup() {

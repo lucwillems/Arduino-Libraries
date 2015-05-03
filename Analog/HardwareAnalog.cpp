@@ -18,19 +18,10 @@
 #include <Arduino.h>
 #include <HardwareAnalog.h>
 
-// Define cbi() and sbi() for clearing and setting bits in the
-// ADC registers.
-#ifndef cbi
-#define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
-#endif
-#ifndef sbi
-#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
-#endif
-
 HardwareAnalog::HardwareAnalog() {
   analogRef = DEFAULT;
   prescaler = PS_128;
-  sampleCount = 0; 
+  sampleCount = 1; 
   currentChannel=0;
 }
 
@@ -55,7 +46,11 @@ void HardwareAnalog::setSamples(byte count) {
   Serial.print("ADC samples=");
   Serial.println(count,HEX);
 #endif
-  sampleCount=count;
+  if (count>0) {
+     sampleCount=count;
+  } else {
+     sampleCount=1;
+  }
 }
   
 void HardwareAnalog::initScan(byte n, const byte analogChannels[]) {
@@ -102,6 +97,7 @@ int HardwareAnalog::analogRead(byte channel) {
   return result;
 }
 
+#ifdef ADC_TIMING
 unsigned long HardwareAnalog::analogTime(byte channel) {
   long result=-1;
   if (channel < nrOfChannels) {
@@ -121,14 +117,13 @@ unsigned long HardwareAnalog::scanTime() {
   interrupts();
   return time;
 }
-  
-unsigned int HardwareAnalog::Count() {
-  return scanCounter;
-}
+#endif
 
 boolean HardwareAnalog::startScan() {
   //is there a scan active, if so,we can't start a new one
-  if (scanActive) {
+	
+  if (scanActive || lock) {
+     scanRequested=true;
      return false;
   }
 #ifdef SERIAL_DEBUG
@@ -159,12 +154,14 @@ void HardwareAnalog::ADCstart() {
    //set AD mux channel and reference
    ADMUX=mux;
    sbi(ADCSRA, ADSC); // Start the ADC conversion.
+#ifdef ADC_TIMING
    startADCTime=micros();
+#endif
 }
 
 void HardwareAnalog::idle() {
-#ifdef SERIAL_DEBUG
-  Serial.println("idle");
+#ifdef SERIAL_IDLE_DEBUG
+  Serial.print(".");
 #endif
 }
 
@@ -182,8 +179,10 @@ void HardwareAnalog::ADCinitInternal(byte mux) {
 int HardwareAnalog::scanInternal(byte n,byte mux) {
   //we can't run scans and this together
   //we should have some timeout here ?
-  while(scanActive) { idle(); }
+  lock=true;
+  while(scanActive) { idle();}
   scanActive=1; //block any new scan until we are finished
+  lock=false;
   ADCinitInternal(mux);
   //start manual scan
   byte samples=n;      // we take average of 200 samples
@@ -195,6 +194,10 @@ int HardwareAnalog::scanInternal(byte n,byte mux) {
   }
   ADCinit();
   scanActive=0;
+  if (scanRequested) {
+     lock=false;
+     startScan();
+  }
   return (int)(value/(long)n);
 }
 
@@ -215,26 +218,28 @@ void HardwareAnalog::setCallBack(scanFinishCallback callback) {
 }
 
 void HardwareAnalog::ADC_ISR() {
+#ifdef ADC_TIMING
+  interruptCount++;
+#endif
 #ifdef SERIAL_DEBUG
   Serial.print("ADC ISR: channel=");
   Serial.print(currentChannel);
   Serial.print(" sample= ");
   Serial.println(currentSample);
 #endif
-  currentSample--;
-  if (currentSample == 0) {
+  int value=ADCW; //Read ADC in word format
+  if (--currentSample == 0) {
       #ifdef SERIAL_DEBUG
         Serial.println("ADC ISR: sample finished");
       #endif
-      unsigned long time=micros();
-      times[currentChannel]=time-startADCTime;
-      values[currentChannel]=ADCW; //read ADC as word,take care of ADCL/ADCH order
+      values[currentChannel]=value; //read ADC as word,take care of ADCL/ADCH order
+#ifdef ADC_TIMING
+      times[currentChannel]=micros()-startADCTime;
+#endif
       //start next conversion if currentChannel < nrOfChannels;
       if (++currentChannel >= nrOfChannels) {
-         scanCounter++;
          #ifdef SERIAL_DEBUG
-           Serial.print("ADC ISR: scan finished :");
-           Serial.println(scanCounter);
+           Serial.print("ADC ISR: scan finished");
          #endif
          scanActive=false;
 	 //callback if defined
@@ -247,13 +252,12 @@ void HardwareAnalog::ADC_ISR() {
                Serial.print("callBack() done");
              #endif
 	 }
+	 //scan is finished, don't start a new one
          return;
       } else {
-	 //start new set of samples
+	 //start new channel sampling
 	 currentSample=sampleCount;
       }
-  } else {
-    int tmp=ADCW; //read ADC but throw it away
   }
   //Start next channel scan
   ADCstart();
