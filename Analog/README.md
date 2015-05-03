@@ -26,5 +26,6 @@ It is able to read all 5 ADC channels in sequence in 340 uSeconds using 128 pres
 Usage
 =====
 The library exports a single ```Analog``` class which can be used to access the analog channels.
+
 See examples/Simple.ino for basic usage example
 
