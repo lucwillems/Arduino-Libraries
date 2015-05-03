@@ -28,4 +28,20 @@ Usage
 The library exports a single ```Analog``` class which can be used to access the analog channels.
 
 See examples/Simple.ino for basic usage example
+```C
+constant byte nrOfChannels=5;
+const byte channels[] = {A0, A1, A2, A3, A4, A5};
 
+setup() {
+  Analog.initScan(nrOfChannels,channels);
+  Analog.startScan(); //star first scan
+}
+
+loop() {
+   if (Analog.isScanFinished()) {
+      //read the channels based on there index number
+      int value=Analog.analogRead(0);
+   };
+   //do other stuff...
+}
+```
